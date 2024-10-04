@@ -6,6 +6,7 @@ on:
       - '*'
     branches:
       - 'emb-examples'
+      - 'master'
   pull_request:
   workflow_dispatch:
 
@@ -16,9 +17,13 @@ jobs:
       redis-stack:
         image: redis/redis-stack-server:latest
         options: >-
-          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+          --health-cmd "redis-cli ping" 
+          --health-interval 10s 
+          --health-timeout 5s 
+          --health-retries 5
         ports:
           - 6379:6379
+
 
     steps:
       - uses: actions/checkout@v3
@@ -34,6 +39,28 @@ jobs:
         with:
           java-version: '11'
           distribution: 'temurin'
+      - name: Configure Datadog Test Visibility
+        uses: datadog/test-visibility-github-action@v2
+        with:
+          languages: java
+          service: jedis
+          api_key: ${{ secrets.DATADOG_API_KEY }}
+          site: datadoghq.eu
+      - name: Configure Redis Check for Datadog Agent
+        run: |
+          sudo mkdir -p /etc/datadog-agent/conf.d/redisdb.d
+          echo '
+          init_config:
+
+          instances:
+            - host: localhost
+              port: 6379
+              username: default
+          ' | sudo tee /etc/datadog-agent/conf.d/redisdb.d/conf.yaml
       - name: Run doctests
         run: |
-          mvn -Pdoctests test
+          mvn clean -Pdoctests test
+        env:
+          DD_APM_INSTRUMENTATION_ENABLED: host
+
+
