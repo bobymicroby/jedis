@@ -38,13 +38,13 @@ jobs:
         with:
           java-version: '11'
           distribution: 'temurin'
-
-      - name: Configure Datadog Agent
-        uses: datadog/agent-github-action@v1
+      - name: Configure Datadog Test Visibility
+        uses: datadog/test-visibility-github-action@v2
         with:
+          languages: java
+          service: jedis
           api_key: ${{ secrets.DATADOG_API_KEY }}
           site: datadoghq.eu
-
       - name: Configure Redis Check for Datadog Agent
         run: |
           sudo mkdir -p /etc/datadog-agent/conf.d/redisdb.d
@@ -54,18 +54,7 @@ jobs:
           instances:
             - host: localhost
               port: 6379
-              tags:
-                - "env:ci"
-                - "service:redis"
           ' | sudo tee /etc/datadog-agent/conf.d/redisdb.d/conf.yaml
-
-      - name: Configure Datadog Test Visibility
-        uses: datadog/test-visibility-github-action@v2
-        with:
-          languages: java
-          service: jedis
-          api_key: ${{ secrets.DATADOG_API_KEY }}
-          site: datadoghq.eu
       - name: Run doctests
         run: |
           mvn clean -Pdoctests test
