@@ -35,7 +35,7 @@ public class BitfieldExample {
         System.out.println(res3);   // >>> [1450, 2]
 
       try {
-        Thread.sleep( 60 * 1000);
+        Thread.sleep( 90 * 1000);
       } catch (InterruptedException e) {
         throw new RuntimeException(e);
       }
