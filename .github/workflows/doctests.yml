@@ -54,7 +54,12 @@ jobs:
           instances:
             - host: localhost
               port: 6379
+              username: default
           ' | sudo tee /etc/datadog-agent/conf.d/redisdb.d/conf.yaml
       - name: Run doctests
         run: |
           mvn clean -Pdoctests test
+        env:
+          DD_APM_INSTRUMENTATION_ENABLED: host
+
+
