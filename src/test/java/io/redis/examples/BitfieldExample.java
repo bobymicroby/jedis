@@ -50,3 +50,4 @@ public class BitfieldExample {
     }
 }
 // HIDE_END
+
