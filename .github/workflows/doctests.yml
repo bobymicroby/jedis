@@ -58,7 +58,6 @@ jobs:
                 - "env:ci"
                 - "service:redis"
           ' | sudo tee /etc/datadog-agent/conf.d/redisdb.d/conf.yaml
-          sudo service datadog-agent restart
 
       - name: Configure Datadog Test Visibility
         uses: datadog/test-visibility-github-action@v2
