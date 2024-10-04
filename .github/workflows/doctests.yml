@@ -16,9 +16,16 @@ jobs:
       redis-stack:
         image: redis/redis-stack-server:latest
         options: >-
-          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+          --health-cmd "redis-cli ping" 
+          --health-interval 10s 
+          --health-timeout 5s 
+          --health-retries 5
+          --label "com.datadoghq.ad.check_names"='["redisdb"]'
+          --label "com.datadoghq.ad.init_configs"='[{}]'
+          --label "com.datadoghq.ad.instances"='[{"host":"%%host%%","port":"6379","password":"%%env_REDIS_PASSWORD%%"}]'
         ports:
           - 6379:6379
+
 
     steps:
       - uses: actions/checkout@v3
