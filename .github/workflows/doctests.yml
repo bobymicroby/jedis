@@ -34,6 +34,13 @@ jobs:
         with:
           java-version: '11'
           distribution: 'temurin'
+      - name: Configure Datadog Test Visibility
+        uses: datadog/test-visibility-github-action@v2
+        with:
+          languages: java
+          service: jedis
+          api_key: ${{ secrets.DATADOG_API_KEY }}
+          site: datadoghq.eu
       - name: Run doctests
         run: |
-          mvn -Pdoctests test
+          mvn clean -Pdoctests test
