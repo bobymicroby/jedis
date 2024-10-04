@@ -20,9 +20,6 @@ jobs:
           --health-interval 10s 
           --health-timeout 5s 
           --health-retries 5
-          --label "com.datadoghq.ad.check_names"='["redisdb"]'
-          --label "com.datadoghq.ad.init_configs"='[{}]'
-          --label "com.datadoghq.ad.instances"='[{"host":"%%host%%","port":"6379","password":"%%env_REDIS_PASSWORD%%"}]'
         ports:
           - 6379:6379
 
@@ -41,6 +38,28 @@ jobs:
         with:
           java-version: '11'
           distribution: 'temurin'
+
+      - name: Configure Datadog Agent
+        uses: datadog/agent-github-action@v1
+        with:
+          api_key: ${{ secrets.DATADOG_API_KEY }}
+          site: datadoghq.eu
+
+      - name: Configure Redis Check for Datadog Agent
+        run: |
+          sudo mkdir -p /etc/datadog-agent/conf.d/redisdb.d
+          echo '
+          init_config:
+
+          instances:
+            - host: localhost
+              port: 6379
+              tags:
+                - "env:ci"
+                - "service:redis"
+          ' | sudo tee /etc/datadog-agent/conf.d/redisdb.d/conf.yaml
+          sudo service datadog-agent restart
+
       - name: Configure Datadog Test Visibility
         uses: datadog/test-visibility-github-action@v2
         with:
