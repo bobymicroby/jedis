@@ -2,6 +2,7 @@
 // REMOVE_START
 package io.redis.examples;
 
+import java.time.Duration;
 import org.junit.Assert;
 import org.junit.Test;
 import java.util.List;
@@ -33,7 +34,12 @@ public class BitfieldExample {
         List<Long> res3 = jedis.bitfield("bike:1:stats", "INCRBY", "u32", "#0", "500", "INCRBY", "u32", "#1", "1");
         System.out.println(res3);   // >>> [1450, 2]
 
-        List<Long> res4 = jedis.bitfield("bike:1:stats", "GET", "u32", "#0", "GET", "u32", "#1");
+      try {
+        Thread.sleep(Duration.ofSeconds(10));
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+      List<Long> res4 = jedis.bitfield("bike:1:stats", "GET", "u32", "#0", "GET", "u32", "#1");
         System.out.println(res4);   // >>> [1450, 2]
         // STEP_END
 
